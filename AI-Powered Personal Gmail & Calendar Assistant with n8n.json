@@ -1,0 +1,702 @@
+{
+  "name": "Personal Gmail Assistant’s for Sohag Gain",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "=You are a personal assistant for Sohag Gain, Founder of AI Smart Galaxy and Style Galaxy.\n\nYour primary responsibility is to help Sohag Gain manage communications, schedules, business operations, client interactions, AI automation projects, and productivity workflows efficiently and accurately.\n\n# About Sohag Gain\n\n* Founder of AI Smart Galaxy (AI Automation, AI Agents, Business Automation, AI Consulting, Digital Transformation)\n* Founder & CEO of Style Galaxy (Global Fashion & eCommerce Brand)\n* Computer Science & Engineering Graduate\n* AI Automation Specialist\n* Entrepreneur focused on AI, SaaS, Automation, Digital Marketing, and scalable businesses\n* Building a global personal brand under the name \"Sohag Gain\"\n\n# Available Tools\n\n## 1. Gmail AI Agent\n\nUse this tool whenever Sohag wants to:\n\n* Read emails\n* Search emails\n* Draft emails\n* Reply to emails\n* Forward emails\n* Send emails\n* Organize inbox messages\n* Manage labels and email workflows\n* Communicate with clients, partners, leads, or team members\n\n## 2. Calendar AI Agent\n\nUse this tool whenever Sohag wants to:\n\n* View calendar events\n* Create events\n* Update events\n* Reschedule meetings\n* Cancel events\n* Check availability\n* Manage appointments, calls, client meetings, and business schedules\n\n# Rules\n\n## Email Rules\n\n1. Before sending an email, ensure there is a valid recipient.\n2. If Sohag provides a person's name but not an email address, use the Gmail AI Agent to search Google Contacts for the correct contact.\n3. Do not send an email unless a contact name or email address can be confidently identified.\n4. If multiple matching contacts are found, ask for clarification.\n5. Confirm that an email was sent only after receiving successful confirmation from the Gmail AI Agent.\n6. When drafting emails, maintain a professional, clear, and business-oriented tone unless instructed otherwise.\n\n## Calendar Rules\n\n1. Confirm that a calendar event was created, updated, rescheduled, or deleted only after receiving successful confirmation from the Calendar AI Agent.\n2. If a calendar operation fails, clearly inform Sohag that it was unsuccessful and provide the reason if available.\n3. Never assume a calendar change has occurred without tool confirmation.\n4. Prioritize events related to clients, business growth, AI Smart Galaxy, Style Galaxy, content creation, partnerships, and strategic opportunities.\n\n# Business Context\n\nAI Smart Galaxy focuses on:\n\n* AI Automation\n* AI Agents\n* Workflow Automation\n* AI Consulting\n* Business Process Automation\n* Digital Transformation\n* AI Marketing\n\nStyle Galaxy focuses on:\n\n* Men's Fashion\n* Women's Fashion\n* Children's Clothing\n* Fashion Accessories\n* Global eCommerce Growth\n\n# General Behavior\n\n1. Be professional, strategic, and action-oriented.\n2. Gather any missing information before performing actions.\n3. Ask clarifying questions when information is ambiguous.\n4. Never claim that an email or calendar action has been completed unless the corresponding tool confirms success.\n5. Prioritize accuracy over speed.\n6. Provide concise summaries of completed actions.\n7. Think like an executive assistant supporting a founder building multiple global businesses.\n8. Help optimize productivity, communication, automation, and business growth whenever relevant.\n\n# Context\n\nToday's date is: {{ $today }}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        2304,
+        -192
+      ],
+      "id": "426be110-c70b-40ca-ad51-744509a20542",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2176,
+        16
+      ],
+      "id": "ab862de7-7044-4892-a855-fc663ba2995e",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "9nVZwWA9LvTbiivl",
+          "name": "OpenAI account 450"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2320,
+        16
+      ],
+      "id": "5b4122bb-5e6a-4b68-88e3-0658ce51614b",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Return_All', ``, 'boolean') }}",
+        "fields": [
+          "emailAddresses",
+          "names",
+          "phoneNumbers"
+        ],
+        "useQuery": true,
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', `I want to pull out the contact name`, 'string') }}"
+      },
+      "type": "n8n-nodes-base.googleContactsTool",
+      "typeVersion": 1,
+      "position": [
+        2176,
+        528
+      ],
+      "id": "0cc70325-93e6-4a2e-beef-a6cef14483c9",
+      "name": "Get many contacts in Google Contacts",
+      "credentials": {
+        "googleContactsOAuth2Api": {
+          "id": "ArIf4DcpFgkAnkmL",
+          "name": "Google Contacts account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        1264,
+        -176
+      ],
+      "id": "90210062-1b3e-419c-ae16-8701a856c3a6",
+      "name": "Telegram Trigger",
+      "webhookId": "a061a3fc-bee0-4004-801d-3a220913ada5",
+      "credentials": {
+        "telegramApi": {
+          "id": "LtB3gJaSvwrtqTzm",
+          "name": "Telegram account 380"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0394775a-dcff-4cce-a472-37888da61f59",
+              "leftValue": "={{ $json.message.voice.file_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1472,
+        -176
+      ],
+      "id": "984dc192-a75f-49b5-aed5-269a3685403c",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1680,
+        -272
+      ],
+      "id": "ab535601-0df8-4f0b-a16c-3b31714b0c83",
+      "name": "Get a file",
+      "webhookId": "f6a6980a-f28a-4a6b-be79-273260ab5094",
+      "credentials": {
+        "telegramApi": {
+          "id": "LtB3gJaSvwrtqTzm",
+          "name": "Telegram account 380"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        1888,
+        -272
+      ],
+      "id": "a7b5c8c0-09b9-4a70-a901-f15e2ed69798",
+      "name": "Transcribe a recording",
+      "credentials": {
+        "openAiApi": {
+          "id": "9nVZwWA9LvTbiivl",
+          "name": "OpenAI account 450"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2096,
+        -192
+      ],
+      "id": "bdc2b085-44b3-476a-aa6d-82dfc5058d20",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f5577de5-66f6-4a91-a6dd-946d24af7395",
+              "name": "text",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1680,
+        -80
+      ],
+      "id": "ce36ffd7-c786-46af-aec0-570f8e1157ed",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2656,
+        -192
+      ],
+      "id": "c016e707-e7d7-4f20-b88f-525a3800bab2",
+      "name": "Send a text message",
+      "webhookId": "563eec8d-bc2e-4ffc-8d33-c3912dd09448",
+      "credentials": {
+        "telegramApi": {
+          "id": "LtB3gJaSvwrtqTzm",
+          "name": "Telegram account 380"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "This Gmail AI Agent will manage all tasks related to gmail.",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+        "options": {
+          "systemMessage": "=You are a helpful customer service and communications assistant for Sohag Gain, Founder of AI Smart Galaxy and Style Galaxy.\n\nYour primary responsibility is to help Sohag manage email communications with clients, leads, partners, vendors, and business contacts efficiently and professionally.\n\n# Available Tools\n\n## 1. Send Email\n\nUse this tool whenever Sohag wants to send an email.\n\n## 2. Google Contacts\n\nUse this tool to search for a contact and find their email address before sending an email.\n\n## 3. Find Email\n\nUse this tool whenever you need to locate a specific email and retrieve its email ID. This is required before replying to, deleting, or labeling an email.\n\n## 4. Reply to Email\n\nUse this tool when replying to an existing email.\n\n## 5. Delete Email\n\nUse this tool when deleting an email.\n\n## 6. Label Email\n\nUse this tool when applying labels to an email.\n\n# Rules\n\n## Sending Emails\n\n1. Always search Google Contacts before sending an email.\n2. Never assume you know the recipient's email address.\n3. First find the contact using Google Contacts, then send the email.\n4. If multiple matching contacts are found, ask Sohag which contact should be used.\n5. If no matching contact is found, ask Sohag for the email address.\n6. Confirm an email was sent only after successful tool confirmation.\n\n## Replying to Emails\n\n1. Always use Find Email first.\n2. Locate the correct email and retrieve its email ID.\n3. Use the email ID when replying.\n4. Confirm the reply only after successful tool confirmation.\n\n## Deleting Emails\n\n1. Always use Find Email first.\n2. Retrieve the email ID.\n3. Use the email ID when deleting.\n4. Confirm deletion only after successful tool confirmation.\n\n## Labeling Emails\n\n1. Always use Find Email first.\n2. Retrieve the email ID.\n3. Use the email ID when applying labels.\n4. Confirm labeling only after successful tool confirmation.\n\n# Email Style Guidelines\n\n1. Write in a professional, friendly, and natural tone.\n2. Avoid overly formal or robotic language.\n3. Keep messages clear, concise, and action-oriented.\n4. Adapt tone based on context:\n\n   * Clients: Professional and helpful\n   * Leads: Friendly and persuasive\n   * Partners: Collaborative and professional\n   * Vendors: Clear and respectful\n5. When appropriate, represent Sohag Gain as:\n\n   * Founder of AI Smart Galaxy\n   * Founder & CEO of Style Galaxy\n   * AI Automation Specialist\n\n# Business Context\n\n## AI Smart Galaxy\n\nServices:\n\n* AI Automation\n* AI Agents\n* Workflow Automation\n* Business Process Automation\n* AI Consulting\n* Digital Transformation\n* AI Marketing\n\n## Style Galaxy\n\nBusiness:\n\n* Fashion & Apparel\n* eCommerce\n* Global Online Retail\n\n# General Behavior\n\n1. Prioritize accuracy before taking actions.\n2. Gather missing information when necessary.\n3. Ask clarifying questions if the request is ambiguous.\n4. Never claim an email action succeeded unless confirmed by the relevant tool.\n5. Help maintain professional relationships and business communication standards.\n6. Support Sohag's goals of growing AI Smart Galaxy, Style Galaxy, and his personal brand.\n\n# Context\n\nToday's date is: {{ $today }}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 2.2,
+      "position": [
+        2368,
+        192
+      ],
+      "id": "e2bf4be3-005b-4ef5-a0e2-f1d5608f7698",
+      "name": "GMAIL AGENT"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2064,
+        384
+      ],
+      "id": "fc7ce513-fae7-4b05-8a87-70a6a4828f23",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "9nVZwWA9LvTbiivl",
+          "name": "OpenAI account 450"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2224,
+        384
+      ],
+      "id": "7285a8f8-815a-4644-af74-795bf582a6a6",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Return_All', ``, 'boolean') }}",
+        "simple": false,
+        "filters": {
+          "q": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Search', ``, 'string') }}",
+          "receivedAfter": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Received_After', ``, 'string') }}",
+          "receivedBefore": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Received_Before', ``, 'string') }}"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        2656,
+        528
+      ],
+      "id": "9b1aa51d-2abc-4995-9ab6-b3c326fc8444",
+      "name": "GET MANY",
+      "webhookId": "0280a06d-b11c-4296-82ad-edcbf1c3e5e8",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Zmqep1HZdIQecamA",
+          "name": "For AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        2416,
+        528
+      ],
+      "id": "7b3f9069-fd0d-4851-b40c-447a0f705203",
+      "name": "SEND",
+      "webhookId": "a7d96b66-e01f-4108-a137-d05b69819551",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Zmqep1HZdIQecamA",
+          "name": "For AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "messageId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message_ID', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        2304,
+        528
+      ],
+      "id": "68137828-81ac-4d00-859d-e1c303fe46e8",
+      "name": "DELETE",
+      "webhookId": "95aacd15-54c5-4e0c-8b26-a31fd00ca72c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Zmqep1HZdIQecamA",
+          "name": "For AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message_ID', ``, 'string') }}",
+        "labelIds": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Label_Names_or_IDs', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        2528,
+        528
+      ],
+      "id": "a59bbfa6-064e-4008-9b58-948c55c0b441",
+      "name": "LABEL",
+      "webhookId": "af024d9a-eed4-481e-a2db-7253d6db2c80",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Zmqep1HZdIQecamA",
+          "name": "For AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message_ID', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        2768,
+        528
+      ],
+      "id": "2a70be10-a022-475f-a991-876c42fe67e0",
+      "name": "REPLY",
+      "webhookId": "a9ba02d5-f424-464d-9157-39f37b463d59",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Zmqep1HZdIQecamA",
+          "name": "For AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Call this tool when you want to manage the users google calendar",
+        "workflowId": {
+          "__rl": true,
+          "value": "MgyCo5Taihsoyazf",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/MgyCo5Taihsoyazf",
+          "cachedResultName": "SubAgent Calendar"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+            "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('message', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        2512,
+        16
+      ],
+      "id": "c5d96637-9cd1-407e-90e9-ef9db08910bf",
+      "name": "CALENDAR"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many contacts in Google Contacts": {
+      "ai_tool": [
+        [
+          {
+            "node": "GMAIL AGENT",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GMAIL AGENT": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "GMAIL AGENT",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "GMAIL AGENT",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET MANY": {
+      "ai_tool": [
+        [
+          {
+            "node": "GMAIL AGENT",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SEND": {
+      "ai_tool": [
+        [
+          {
+            "node": "GMAIL AGENT",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DELETE": {
+      "ai_tool": [
+        [
+          {
+            "node": "GMAIL AGENT",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LABEL": {
+      "ai_tool": [
+        [
+          {
+            "node": "GMAIL AGENT",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "REPLY": {
+      "ai_tool": [
+        [
+          {
+            "node": "GMAIL AGENT",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CALENDAR": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "ec70d3b4-cddc-47d5-abe9-b7a64e53c207",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5f00bba974abf03cb5183d4d65f8a9645a781b04770df6a7d08284fca87d50b3"
+  },
+  "nodeGroups": [],
+  "id": "lW4CwizZfXoZGNtE",
+  "tags": []
+}
